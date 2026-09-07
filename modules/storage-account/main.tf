@@ -1,19 +1,6 @@
 # --- Storage Account File Share ---
 
-data "azurerm_virtual_network" "aks_vnet" {
-  name                = var.aks_vnet_name
-  resource_group_name = var.node_resource_group_name
-
-  depends_on = [var.aks_vnet_name]
-}
-
-data "azurerm_subnet" "aks_subnet" {
-  name                 = "aks-subnet"
-  virtual_network_name = data.azurerm_virtual_network.aks_vnet.name
-  resource_group_name  = data.azurerm_virtual_network.aks_vnet.resource_group_name
-
-  depends_on = [data.azurerm_virtual_network.aks_vnet, var.aks_subnet_id]
-}
+data "azurerm_client_config" "current" {}
 
 # --- Storage Account for NFS / SMB ---
 resource "azurerm_storage_account" "sa_fs" {
@@ -49,19 +36,20 @@ resource "azurerm_storage_share" "employes_share" {
 }
 
 # --- Security group Entra ID ---
-resource "azuread_group" "employes" {
-  display_name     = "mcherfi_employes"
+resource "azuread_group" "employees" {
+  display_name     = "mcherfi_employees"
   security_enabled = true
   description      = "Groupe d'accès au partage de fichiers pour les employés"
+  owners           = [data.azurerm_client_config.current.object_id]
 }
 
 # --- Access role for Employes ---
 resource "azurerm_role_assignment" "employes_smb_access" {
   scope                = azurerm_storage_account.sa_fs.id
   role_definition_name = "Storage File Data SMB Share Contributor"
-  principal_id         = azuread_group.employes.object_id
+  principal_id         = azuread_group.employees.object_id
 
-  depends_on = [azuread_group.employes]
+  depends_on = [azuread_group.employees]
 }
 
 # --- Private Endpoint & Private Zone DNS ---
@@ -78,7 +66,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   private_dns_zone_name = azurerm_private_dns_zone.dns_file.name
   virtual_network_id    = data.azurerm_virtual_network.aks_vnet.id
 
-  depends_on = [data.azurerm_virtual_network.aks_vnet]
+  depends_on = [var.aks_vnet_id]
 }
 
 
@@ -101,7 +89,7 @@ resource "azurerm_private_endpoint" "nfs_pe" {
     private_dns_zone_ids = [azurerm_private_dns_zone.dns_file.id]
   }
 
-  depends_on = [data.azurerm_subnet.aks_subnet]
+  depends_on = [var.aks_subnet_id]
 }
 
 
@@ -153,8 +141,6 @@ resource "azurerm_storage_container" "velero" {
 
   depends_on = [azurerm_storage_account.sa_velero]
 }
-
-data "azurerm_client_config" "current" {}
 
 resource "azurerm_role_assignment" "storage_blob_data_contributor" {
   scope                = azurerm_storage_account.sa_velero.id
