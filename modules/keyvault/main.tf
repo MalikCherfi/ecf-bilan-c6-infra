@@ -5,15 +5,16 @@ data "azurerm_client_config" "current" {}
 
 # Key Vault for encryption keys
 resource "azurerm_key_vault" "storage" {
-  name                        = "kv-storage-encrypt-mc"
-  location                    = var.location
-  resource_group_name         = var.resource_group_name
-  tenant_id                   = data.azurerm_client_config.current.tenant_id
-  sku_name                    = "standard"
-  enabled_for_disk_encryption = false
-  purge_protection_enabled    = true # Required for CMK encryption
-  soft_delete_retention_days  = 90
-  tags                        = var.tags
+  name                          = "kv-storage-encrypt-mc"
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  tenant_id                     = data.azurerm_client_config.current.tenant_id
+  sku_name                      = "standard"
+  enabled_for_disk_encryption   = false
+  purge_protection_enabled      = true # Required for CMK encryption
+  soft_delete_retention_days    = 90
+  public_network_access_enabled = true
+  tags                          = var.tags
 
   # Network rules for additional security
   network_acls {
