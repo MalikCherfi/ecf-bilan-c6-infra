@@ -32,6 +32,7 @@ module "storage-account" {
   user_assigned_identity_id  = module.keyvault.user_assigned_identity_id
   aks_vnet_id                = module.aks.aks_vnet_id
   aks_subnet_id              = module.aks.vnet_subnet_id
+  employes_group_object_id   = var.employes_group_object_id
 
 }
 
