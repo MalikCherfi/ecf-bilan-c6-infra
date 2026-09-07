@@ -62,7 +62,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "link-aks-vnet"
   resource_group_name   = "mcherfiRG"
   private_dns_zone_name = azurerm_private_dns_zone.dns_file.name
-  virtual_network_id    = data.azurerm_virtual_network.aks_vnet.id
+  virtual_network_id    = var.aks_vnet_id
 
   depends_on = [var.aks_vnet_id]
 }
