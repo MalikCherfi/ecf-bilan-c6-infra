@@ -27,11 +27,11 @@ module "storage-account" {
   node_resource_group_name   = var.node_resource_group_name
   location                   = data.azurerm_resource_group.rg.location
   tags                       = local.tags
-  aks_subnet_id              = module.aks.vnet_subnet_id
   key_vault_access_policy_id = module.keyvault.key_vault_access_policy_id
   key_vault_key_id           = module.keyvault.key_vault_key_id
   user_assigned_identity_id  = module.keyvault.user_assigned_identity_id
-  aks_vnet_name              = module.aks.aks_vnet_name
+  aks_vnet_id                = module.aks.aks_vnet_id
+  aks_subnet_id              = module.aks.vnet_subnet_id
 
 }
 
