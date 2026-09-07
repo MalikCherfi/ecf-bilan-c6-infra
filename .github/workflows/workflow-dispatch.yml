@@ -49,23 +49,19 @@ jobs:
       - name: Key Vault Check
         id: check_kv
         run: |
-          if az keyvault show --name kv-storage-encrypt-mc --resource-group "mcherfiRG" &>/dev/null; then
+          if az keyvault show --name kv-storage-encrypt-mc &>/dev/null; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Temporarily Allow Key Vault Access
+      - name: "Authorize runner IP on Key Vault"
         if: steps.check_kv.outputs.exists == 'true'
         run: |
-          echo "Ouverture temporaire du Key Vault pour Terraform..."
-          az keyvault update \
-            --name kv-storage-encrypt-mc \
-            --resource-group "mcherfiRG" \
-            --default-action Allow
-
-          echo "Attente de la propagation (15s)..."
-          sleep 15
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          az keyvault network-rule add \
+          --name kv-storage-encrypt-mc \
+          --ip-address "$RUNNER_IP/32"
 
       - name: Terraform Init
         run: |
@@ -90,11 +86,10 @@ jobs:
         if: ${{ inputs.action == 'destroy' }}
         run: terraform destroy -auto-approve
 
-      - name: Restore Key Vault Firewall Restriction
+      - name: Remove runner IP from Key Vault (Cleanup)
         if: always() && inputs.action == 'apply' && steps.check_kv.outputs.exists == 'true'
         run: |
-          echo "Verrouillage du pare-feu du Key Vault..."
-          az keyvault update \
-            --name kv-storage-encrypt-mc \
-            --resource-group "mcherfiRG" \
-            --default-action Deny
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          az keyvault network-rule remove \
+          --name kv-storage-encrypt-mc \
+          --ip-address "$RUNNER_IP/32"
