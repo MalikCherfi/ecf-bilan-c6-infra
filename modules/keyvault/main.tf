@@ -12,7 +12,7 @@ resource "azurerm_key_vault" "storage" {
   sku_name                    = "standard"
   enabled_for_disk_encryption = false
   purge_protection_enabled    = true # Required for CMK encryption
-  soft_delete_retention_days  = 7
+  soft_delete_retention_days  = 90
   tags                        = var.tags
 
   # Network rules for additional security
