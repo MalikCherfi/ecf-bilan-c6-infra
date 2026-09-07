@@ -35,17 +35,11 @@ resource "azurerm_storage_share" "employes_share" {
   enabled_protocol   = "SMB"
 }
 
-# --- Security group Entra ID ---
-data "azuread_group" "employes" {
-  display_name     = "mcherfi_employes"
-  security_enabled = true
-}
-
 # --- Access role for Employes ---
 resource "azurerm_role_assignment" "employes_smb_access" {
   scope                = azurerm_storage_account.sa_fs.id
   role_definition_name = "Storage File Data SMB Share Contributor"
-  principal_id         = data.azuread_group.employes.object_id
+  principal_id         = var.employes_group_object_id
 
   depends_on = [data.azuread_group.employes]
 }
