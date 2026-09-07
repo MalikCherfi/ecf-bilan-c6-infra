@@ -54,7 +54,7 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Autoriser l'IP du runner sur le Key Vault
+      - name: "Authorize runner IP on Key Vault"
         if: steps.check_kv.outputs.exists == 'true'
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
@@ -85,7 +85,7 @@ jobs:
         if: ${{ inputs.action == 'destroy' }}
         run: terraform destroy -auto-approve
 
-      - name: Retirer l'IP du runner (Cleanup)
+      - name: Remove runner IP from Key Vault (Cleanup)
         if: always() && inputs.action == 'apply' && steps.check_kv.outputs.exists == 'true'
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
