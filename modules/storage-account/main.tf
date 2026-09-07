@@ -47,7 +47,7 @@ resource "azurerm_role_assignment" "employes_smb_access" {
   role_definition_name = "Storage File Data SMB Share Contributor"
   principal_id         = data.azuread_group.employes.object_id
 
-  depends_on = [azuread_group.employes]
+  depends_on = [data.azuread_group.employes]
 }
 
 # --- Private Endpoint & Private Zone DNS ---
@@ -73,7 +73,7 @@ resource "azurerm_private_endpoint" "nfs_pe" {
   name                = "pe-storage-postgres-nfs"
   location            = "francecentral"
   resource_group_name = "mcherfiRG"
-  subnet_id           = data.azurerm_subnet.aks_subnet.id
+  subnet_id           = var.aks_subnet_id
 
   private_service_connection {
     name                           = "psc-storage-nfs"
