@@ -45,7 +45,17 @@ jobs:
           framework: terraform
           soft_fail: true
 
-      - name: Autoriser l'IP du runner sur le Key Vault
+      - name: Key Vault Check
+        id: check_kv
+        run: |
+          if az keyvault show --name kv-storage-encrypt-mc &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Autorise Key Vault IP 
+        if: steps.check_kv.outputs.exists == 'true'
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
           az keyvault network-rule add \
@@ -64,7 +74,7 @@ jobs:
         run: terraform validate
 
       - name: Retirer l'IP du runner (Cleanup)
-        if: always()
+        if: always() && steps.check_kv.outputs.exists == 'true'
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
           az keyvault network-rule remove \
