@@ -45,7 +45,17 @@ jobs:
         run: terraform fmt -check -diff -recursive
         continue-on-error: true
 
+      - name: Key Vault Check
+        id: check_kv
+        run: |
+          if az keyvault show --name kv-storage-encrypt-mc &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Autoriser l'IP du runner sur le Key Vault
+        if: steps.check_kv.outputs.exists == 'true'
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
           az keyvault network-rule add \
@@ -76,7 +86,7 @@ jobs:
         run: terraform destroy -auto-approve
 
       - name: Retirer l'IP du runner (Cleanup)
-        if: always() && inputs.action == 'apply'
+        if: always() && inputs.action == 'apply' && steps.check_kv.outputs.exists == 'true'
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
           az keyvault network-rule remove \
