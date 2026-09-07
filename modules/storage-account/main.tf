@@ -36,20 +36,18 @@ resource "azurerm_storage_share" "employes_share" {
 }
 
 # --- Security group Entra ID ---
-resource "azuread_group" "employees" {
-  display_name     = "mcherfi_employees"
+data "azuread_group" "employes" {
+  display_name     = "mcherfi_employes"
   security_enabled = true
-  description      = "Groupe d'accès au partage de fichiers pour les employés"
-  owners           = [data.azurerm_client_config.current.object_id]
 }
 
 # --- Access role for Employes ---
 resource "azurerm_role_assignment" "employes_smb_access" {
   scope                = azurerm_storage_account.sa_fs.id
   role_definition_name = "Storage File Data SMB Share Contributor"
-  principal_id         = azuread_group.employees.object_id
+  principal_id         = data.azuread_group.employes.object_id
 
-  depends_on = [azuread_group.employees]
+  depends_on = [azuread_group.employes]
 }
 
 # --- Private Endpoint & Private Zone DNS ---
