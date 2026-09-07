@@ -7,10 +7,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   workload_identity_enabled = true
 
   default_node_pool {
-    name       = "default"
-    node_count = 1
-    vm_size    = "Standard_D2_v3"
-    temporary_name_for_rotation = "temp"
+    name                         = "default"
+    node_count                   = 1
+    vm_size                      = "Standard_D2_v3"
+    temporary_name_for_rotation  = "temp"
     only_critical_addons_enabled = false
   }
 
