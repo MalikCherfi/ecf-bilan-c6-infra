@@ -1,6 +1,6 @@
 output "aks_vnet_id" {
   description = "ID de la vnet du cluster AKS"
-  value       = data.azurerm_virtual_network.aks_vnet.id
+  value       = data.azurerm_resources.aks_vnet.resources[0].id
 }
 
 output "vnet_subnet_id" {
