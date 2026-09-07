@@ -49,19 +49,27 @@ jobs:
       - name: Key Vault Check
         id: check_kv
         run: |
-          if az keyvault show --name kv-storage-encrypt-mc &>/dev/null; then
+          if az keyvault show --name kv-storage-encrypt-mc --resource-group "mcherfiRG" &>/dev/null; then
             echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Key Vault trouvé."
           else
             echo "exists=false" >> $GITHUB_OUTPUT
+            echo "WARNING: Key Vault non trouvé ou droits insuffisants pour 'az keyvault show' !"
           fi
 
       - name: "Authorize runner IP on Key Vault"
         if: steps.check_kv.outputs.exists == 'true'
         run: |
           RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "IP publique du runner : $RUNNER_IP"
+
           az keyvault network-rule add \
-          --name kv-storage-encrypt-mc \
-          --ip-address "$RUNNER_IP/32"
+            --name kv-storage-encrypt-mc \
+            --resource-group "mcherfiRG" \
+            --ip-address "$RUNNER_IP/32"
+
+          echo "Attente de la propagation de la règle de pare-feu Azure (30s)..."
+          sleep 30
 
       - name: Terraform Init
         run: |
