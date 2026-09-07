@@ -28,8 +28,3 @@ variable "node_resource_group_name" {
   description = "Name of the node resource group for AKS cluster"
   type        = string
 }
-
-variable "entra_id_employes_group_object_id" {
-  description = "Object ID of the Entra ID group for employees"
-  type        = string
-}
