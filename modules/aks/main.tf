@@ -21,17 +21,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   tags = var.tags
 }
 
-data "azurerm_resources" "aks_vnet" {
-  resource_group_name = azurerm_kubernetes_cluster.aks.node_resource_group
-  type                = "Microsoft.Network/virtualNetworks"
-
-  depends_on = [azurerm_kubernetes_cluster.aks]
+data "azurerm_virtual_network" "aks_vnet" {
+  name                = "aks-vnet-15161255"
+  resource_group_name = var.node_resource_group_name
 }
 
 data "azurerm_subnet" "aks_subnet" {
   name                 = "aks-subnet"
-  virtual_network_name = try(data.azurerm_resources.aks_vnet.resources[0].name, "")
+  virtual_network_name = data.azurerm_virtual_network.aks_vnet.name
   resource_group_name  = azurerm_kubernetes_cluster.aks.node_resource_group
 
-  depends_on = [azurerm_kubernetes_cluster.aks, data.azurerm_resources.aks_vnet]
+  depends_on = [azurerm_kubernetes_cluster.aks, data.azurerm_virtual_network.aks_vnet]
 }
