@@ -12,16 +12,23 @@ resource "azurerm_key_vault" "storage" {
   sku_name                      = "standard"
   rbac_authorization_enabled    = false
   enabled_for_disk_encryption   = false
-  purge_protection_enabled      = true # Required for CMK encryption
+  purge_protection_enabled      = true
   soft_delete_retention_days    = 90
   public_network_access_enabled = true
   tags                          = var.tags
 
-  # Network rules for additional security
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    key_permissions     = ["Get", "List", "Create", "Delete", "Update", "Recover", "Purge", "GetRotationPolicy", "SetRotationPolicy"]
+    secret_permissions  = ["Get", "List", "Set", "Delete"]
+    storage_permissions = ["Get", "List"]
+  }
+
   network_acls {
     default_action = "Deny"
     bypass         = "AzureServices"
-    ip_rules       = ["92.184.110.0/24"] # office IP
   }
 }
 
