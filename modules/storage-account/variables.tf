@@ -28,3 +28,8 @@ variable "user_assigned_identity_id" {
   type        = string
   description = "L'ID de l'identité assignée pour le stockage"
 }
+
+variable "employes_group_object_id" {
+  type        = string
+  description = "Object ID du groupe Entra ID mcherfi_employes"
+}
