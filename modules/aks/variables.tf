@@ -2,3 +2,7 @@ variable "owner" { type = string }
 variable "resource_group_name" { type = string }
 variable "location" { type = string }
 variable "tags" { type = map(string) }
+variable "node_resource_group_name" {
+  description = "Name of the node resource group for AKS cluster"
+  type        = string
+}
