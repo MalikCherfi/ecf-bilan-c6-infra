@@ -33,5 +33,5 @@ data "azurerm_subnet" "aks_subnet" {
   virtual_network_name = data.azurerm_resources.aks_vnet.resources[0].name
   resource_group_name  = azurerm_kubernetes_cluster.aks.node_resource_group
 
-  depends_on = [azurerm_kubernetes_cluster.aks]
+  depends_on = [azurerm_kubernetes_cluster.aks, data.azurerm_resources.aks_vnet]
 }
