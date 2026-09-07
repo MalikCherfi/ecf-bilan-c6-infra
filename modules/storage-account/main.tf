@@ -12,7 +12,7 @@ data "azurerm_subnet" "aks_subnet" {
   virtual_network_name = data.azurerm_virtual_network.aks_vnet.name
   resource_group_name  = data.azurerm_virtual_network.aks_vnet.resource_group_name
 
-  depends_on = [data.azurerm_virtual_network.aks_vnet.name, var.aks_subnet_id]
+  depends_on = [data.azurerm_virtual_network.aks_vnet, var.aks_subnet_id]
 }
 
 # --- Storage Account for NFS / SMB ---
@@ -28,7 +28,7 @@ resource "azurerm_storage_account" "sa_fs" {
   public_network_access_enabled = false
 
   azure_files_authentication {
-    directory_type = "AADKERBEROS"
+    directory_type = "AADKERB"
   }
 }
 
@@ -78,7 +78,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   private_dns_zone_name = azurerm_private_dns_zone.dns_file.name
   virtual_network_id    = data.azurerm_virtual_network.aks_vnet.id
 
-  depends_on = [data.azurerm_virtual_network.aks_vnet.name]
+  depends_on = [data.azurerm_virtual_network.aks_vnet]
 }
 
 
@@ -101,7 +101,7 @@ resource "azurerm_private_endpoint" "nfs_pe" {
     private_dns_zone_ids = [azurerm_private_dns_zone.dns_file.id]
   }
 
-  depends_on = [data.azurerm_subnet.aks_subnet.id]
+  depends_on = [data.azurerm_subnet.aks_subnet]
 }
 
 
