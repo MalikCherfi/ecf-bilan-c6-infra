@@ -41,7 +41,7 @@ resource "azurerm_role_assignment" "employes_smb_access" {
   role_definition_name = "Storage File Data SMB Share Contributor"
   principal_id         = var.employes_group_object_id
 
-  depends_on = [data.azuread_group.employes]
+  depends_on = [var.employes_group_object_id]
 }
 
 # --- Private Endpoint & Private Zone DNS ---
