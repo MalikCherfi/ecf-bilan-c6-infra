@@ -9,6 +9,11 @@ variable "aks_subnet_id" {
   type        = string
   description = "L'ID du sous-réseau AKS pour les règles d'accès réseau"
 }
+
+variable "aks_vnet_id" {
+  type        = string
+  description = "L'ID du Vnet"
+}
 variable "key_vault_access_policy_id" {
   type        = string
   description = "L'ID de la politique d'accès au Key Vault pour le stockage"
@@ -22,9 +27,4 @@ variable "key_vault_key_id" {
 variable "user_assigned_identity_id" {
   type        = string
   description = "L'ID de l'identité assignée pour le stockage"
-}
-
-variable "aks_vnet_name" {
-  type        = string
-  description = "Le nom de la vnet du cluster AKS"
 }
