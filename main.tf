@@ -8,16 +8,19 @@ locals {
   )
 }
 
+data "azurerm_client_config" "current" {}
+
 data "azurerm_resource_group" "rg" {
   name = "mcherfiRG"
 }
 module "aks" {
   source = "./modules/aks"
 
-  owner               = "malik-cherfi"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  tags                = local.tags
+  owner                    = "malik-cherfi"
+  resource_group_name      = data.azurerm_resource_group.rg.name
+  location                 = data.azurerm_resource_group.rg.location
+  tags                     = local.tags
+  node_resource_group_name = var.node_resource_group_name
 }
 module "storage-account" {
   source = "./modules/storage-account"
