@@ -8,7 +8,7 @@ output "vnet_subnet_id" {
   value       = data.azurerm_subnet.aks_subnet.id
 }
 
-output "aks_kubelet_identity_object_id" {
-  description = "Object ID de l'identité du kubelet du cluster AKS"
+output "aks_kubelet_identity_principal_id" {
+  description = "Principal ID de l'identité du kubelet du cluster AKS"
   value       = azurerm_kubernetes_cluster.aks.kubelet_identity[0].principal_id
 }
