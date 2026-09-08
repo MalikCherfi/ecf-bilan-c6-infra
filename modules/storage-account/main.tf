@@ -19,6 +19,12 @@ resource "azurerm_storage_account" "sa_fs" {
   }
 }
 
+resource "azurerm_role_assignment" "aks_storage_contributor" {
+  scope                = azurerm_storage_account.sa_fs.id
+  role_definition_name = "Contributor"
+  principal_id         = var.aks_kubelet_identity_object_id
+}
+
 # --- NFS file share for Postgres ---
 resource "azurerm_storage_share" "postgres_share" {
   name               = "postgres-data"
