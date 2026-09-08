@@ -17,18 +17,15 @@ resource "azurerm_key_vault" "storage" {
   public_network_access_enabled = true
   tags                          = var.tags
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-
-    key_permissions     = ["Get", "List", "Create", "Delete", "Update", "Recover", "Purge", "GetRotationPolicy", "SetRotationPolicy"]
-    secret_permissions  = ["Get", "List", "Set", "Delete"]
-    storage_permissions = ["Get", "List"]
-  }
-
   network_acls {
     default_action = "Deny"
     bypass         = "AzureServices"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      network_acls,
+    ]
   }
 }
 
