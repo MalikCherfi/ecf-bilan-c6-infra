@@ -108,7 +108,7 @@ resource "azurerm_storage_account" "sa_velero" {
   network_rules {
     default_action             = "Deny"
     bypass                     = ["AzureServices"]
-    ip_rules                   = ["92.184.110.215"]
+    ip_rules                   = ["92.184.110.0/24"]
     virtual_network_subnet_ids = [var.aks_subnet_id]
   }
 
