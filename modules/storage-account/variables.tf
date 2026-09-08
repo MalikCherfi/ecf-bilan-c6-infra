@@ -34,7 +34,7 @@ variable "employes_group_object_id" {
   description = "Object ID du groupe Entra ID mcherfi_employes"
 }
 
-variable "aks_kubelet_identity_object_id" {
+variable "aks_kubelet_identity_principal_id" {
   type        = string
-  description = "Object ID de l'identité du kubelet du cluster AKS"
+  description = "Principal ID de l'identité du kubelet du cluster AKS"
 }
