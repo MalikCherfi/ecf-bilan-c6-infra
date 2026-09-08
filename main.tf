@@ -36,7 +36,7 @@ module "storage-account" {
   aks_vnet_id                    = module.aks.aks_vnet_id
   aks_subnet_id                  = module.aks.vnet_subnet_id
   employes_group_object_id       = var.employes_group_object_id
-  aks_kubelet_identity_object_id = module.aks.aks_kubelet_identity_object_id
+  aks_kubelet_identity_principal_id = module.aks.aks_kubelet_identity_principal_id
 
 }
 
