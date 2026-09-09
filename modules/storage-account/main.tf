@@ -12,10 +12,17 @@ resource "azurerm_storage_account" "sa_fs" {
   account_replication_type = "LRS"
 
   https_traffic_only_enabled    = false
-  public_network_access_enabled = false
+  public_network_access_enabled = true
 
   azure_files_authentication {
     directory_type = "AADKERB"
+  }
+
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = ["86.201.70.0/24"]
+    virtual_network_subnet_ids = [var.aks_subnet_id]
+    bypass                     = ["AzureServices"]
   }
 }
 
