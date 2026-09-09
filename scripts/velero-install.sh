@@ -27,7 +27,7 @@ az role assignment create --assignee $IDENTITY_CLIENT_ID --role "Storage Blob Da
 fi
 
 # create namespace
-kubectl create namespace velero
+kubectl create namespace velero --dry-run=client -o yaml | kubectl apply -f -
 
 # create service account
 cat <<EOF | kubectl apply -f -
@@ -65,7 +65,8 @@ az identity federated-credential create \
   --identity-name "${IDENTITY_NAME}" \
   --resource-group "${AZURE_RESOURCE_GROUP}" \
   --issuer "${SERVICE_ACCOUNT_ISSUER}" \
-  --subject "system:serviceaccount:velero:velero"
+  --subject "system:serviceaccount:velero:velero" \
+  || true # Ignore l'erreur si elle existe déjà
 
 cat << EOF  > ./credentials-velero
 AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID}
@@ -81,4 +82,5 @@ velero install \
     --bucket $BLOB_CONTAINER \
     --secret-file ./credentials-velero \
     --backup-location-config useAAD="true",resourceGroup=$AZURE_RESOURCE_GROUP,storageAccount=$AZURE_STORAGE_ACCOUNT_ID,subscriptionId=$AZURE_SUBSCRIPTION_ID \
-    --snapshot-location-config apiTimeout=2m,resourceGroup=$AZURE_RESOURCE_GROUP,subscriptionId=$AZURE_SUBSCRIPTION_ID
+    --snapshot-location-config apiTimeout=2m,resourceGroup=$AZURE_RESOURCE_GROUP,subscriptionId=$AZURE_SUBSCRIPTION_ID \
+    --dry-run -o yaml | kubectl apply -f -
