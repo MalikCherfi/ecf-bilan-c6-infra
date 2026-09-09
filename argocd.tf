@@ -11,8 +11,13 @@ resource "helm_release" "argocd" {
   namespace  = kubernetes_namespace.argocd.metadata[0].name
   version    = "10.8.4"
 
-  set = {
-    name  = "server.service.type"
-    value = "ClusterIP"
-  }
+  values = [
+    yamlencode({
+      server = {
+        service = {
+          type = "ClusterIP"
+        }
+      }
+    })
+  ]
 }
