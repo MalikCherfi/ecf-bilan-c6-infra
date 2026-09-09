@@ -6,17 +6,37 @@ Infrastructure Terraform pour le déploiement d'un cluster AKS sur Azure, avec s
 
 ```
 ecf-bilan-c6-infra/
-├── .github/workflows/
-│   └── terraform.yml        # Pipeline Terraform (apply/destroy manuel)
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                     # Pipeline CI (Validation, fmt & terraform plan)
+│       └── workflow-dispatch.yml      # Déclenchement manuel des workflows GitHub Actions
 ├── modules/
-│   ├── aks/                 # Cluster AKS (OIDC + workload identity)
-│   ├── keyvault/            # Key Vault + clé de chiffrement (CMK)
-│   └── storage/             # Storage Accounts (NFS/SMB + backup Velero)
-└── scripts/
-    ├── bootstrap-backend.sh # Création du backend Terraform (Storage Account)
-    ├── group-creation.sh    # Création du groupe Azure AD "employes"
-    ├── oidc.sh               # Fédération OIDC GitHub Actions <-> Azure
-    └── velero-install.sh    # Installation de Velero sur le cluster
+│   ├── aks/                           # Module cluster Azure Kubernetes Service
+│   │   ├── main.tf                    # Ressources du cluster, node pools et profils OIDC
+│   │   ├── outputs.tf                 # Exportations (kube_config, certs, oidc_issuer_url)
+│   │   └── variables.tf               # Variables du module AKS
+│   ├── keyvault/                      # Module Azure Key Vault
+│   │   ├── main.tf                    # Ressources Key Vault, règles d'accès et secrets
+│   │   ├── outputs.tf                 # Exportations (key_vault_id, vault_uri)
+│   │   └── variables.tf               # Variables du module Key Vault
+│   └── storage-account/               # Module Azure Storage Account
+│       ├── main.tf                    # Compte de stockage, conteneurs Blob (Backups / State)
+│       └── variables.tf               # Variables du module Storage Account
+├── scripts/
+│   ├── bootstrap-backend.sh           # Initialisation du Storage Account pour le backend TF
+│   ├── credentials-velero             # Fichier local de crédentiels (exclu par .gitignore)
+│   ├── group-creation.sh              # Création des groupes de sécurité Azure AD / Entra ID
+│   ├── oidc.sh                        # Configuration Workload Identity & fédération OIDC
+│   └── velero-install.sh              # Script CLI pour l'installation autonome de Velero
+├── .gitignore                         # Fichiers à ignorer par Git (.tfstate, .terraform, secrets)
+├── argocd.tf                          # Installation Helm d'ArgoCD sur le cluster AKS
+├── backend.hcl                        # Configuration de paramètres pour le backend azurerm
+├── backend.tf                         # Déclaration du backend distant pour le fichier d'état
+├── main.tf                            # Instanciation et orchestration des modules Terraform
+├── providers.tf                       # Configuration des providers (azurerm, kubernetes, helm)
+├── README.md                          # Documentation du dépôt d'infrastructure
+├── terraform.tfvars                   # Valeurs des variables locales (exclu par .gitignore)
+└── variables.tf                       # Déclaration des variables globales
 ```
 
 ## Prérequis
